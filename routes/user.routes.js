@@ -13,7 +13,7 @@ userRouter.get("/login_user", authentication, async (req, res) => {
       { _id: userId },
       { password: 0, __v: 0 }
     );
-    // delete user.password
+    delete user.password
     res.send({ user });
   } catch (error) {}
 });
@@ -88,7 +88,7 @@ userRouter.patch("/unlock", authentication, async (req, res) => {
     }
     user.roles = [...user.roles, "CREATOR"];
     await user.save();
-    res.send({ user });
+    res.send({  message: "You are now creator" ,user });
   } catch (error) {}
 });
 

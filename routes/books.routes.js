@@ -41,6 +41,7 @@ bookRouter.get("/one/:id", async (req, res) => {
     res.send({ message: "internal error" });
   }
 });
+
 bookRouter.get(
   "/",
   authentication,
@@ -87,7 +88,7 @@ bookRouter.get(
         } else {
           allBooks = await BookModel.find(filterObj);
         }
-        res.send({ message: "Viewer Books", data: allBooks });
+        res.send({ message: "All Viewer Books", data: allBooks });
 
         return;
       } else {
@@ -117,7 +118,11 @@ bookRouter.patch(
     }
     const userId = req.userId;
     try {
-      const newBid = await BookModel.updateOne(
+      let bookCheck = await BookModel.findOne({ _id: id });
+      if (!bookCheck) {
+        return res.send({ message: "Book Not Found" });
+      }
+      const book = await BookModel.updateOne(
         { _id: id },
         { ...input, createdBy: userId }
       );
