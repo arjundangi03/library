@@ -10,6 +10,11 @@ bookRouter.post(
   roleCheck(["CREATOR"]),
   async (req, res) => {
     const input = req.body;
+    const { bookName, price, category, writerName, publisherName } = input;
+
+    if (!bookName || !price || !category || !writerName || !publisherName) {
+      return res.send({ message: "Fields are Missing" });
+    }
     const userId = req.userId;
     try {
       const newBook = await BookModel.create({
@@ -58,12 +63,12 @@ bookRouter.get(
       const tenMinutesAgo = new Date(now - 10 * 60 * 1000); // 10 minutes ago
       // console.log(tenMinutesAgo)
       // Filter documents created before the last 10 minutes
-      filterObj["createdAt"] = { $lt:  tenMinutesAgo };
+      filterObj["createdAt"] = { $lt: tenMinutesAgo };
       console.log("Now:", now);
       console.log("Ten Minutes Ago:", tenMinutesAgo);
     }
-    if (category && category !== '/') {
-      console.log( 'cat', category)
+    if (category && category !== "/") {
+      console.log("cat", category);
       filterObj["category"] = category;
     }
 
@@ -101,7 +106,15 @@ bookRouter.patch(
   roleCheck(["CREATOR"]),
   async (req, res) => {
     const { id } = req.params;
+    if (!id) {
+      return res.send({ message: "book _id is Missing" });
+    }
     const input = req.body;
+    const { bookName, price, category, writerName, publisherName } = input;
+
+    if (!bookName || !price || !category || !writerName || !publisherName) {
+      return res.send({ message: "Fields are Missing" });
+    }
     const userId = req.userId;
     try {
       const newBid = await BookModel.updateOne(
@@ -122,7 +135,14 @@ bookRouter.delete(
   roleCheck(["CREATOR"]),
   async (req, res) => {
     const { id } = req.params;
+    if (!id) {
+      return res.send({ message: "book _id is Missing" });
+    }
     try {
+      let book = await BookModel.findOne({ _id: id });
+      if (!book) {
+        return res.send({ message: "Book Not Found" });
+      }
       await BookModel.deleteOne({ _id: id });
       console.log("dele");
       res.send({ message: "Book Deleted" });
