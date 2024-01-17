@@ -118,9 +118,12 @@ bookRouter.patch(
     }
     const userId = req.userId;
     try {
-      let bookCheck = await BookModel.findOne({ _id: id });
+      let bookCheck = await BookModel.findOne({ _id: id, createdBy: userId });
       if (!bookCheck) {
-        return res.send({ message: "Book Not Found" });
+        return res.send({
+          message:
+            "Book Not Found or You are not allow to delete other users book",
+        });
       }
       const book = await BookModel.updateOne(
         { _id: id },
@@ -140,13 +143,18 @@ bookRouter.delete(
   roleCheck(["CREATOR"]),
   async (req, res) => {
     const { id } = req.params;
+    const userId = req.userId;
+
     if (!id) {
       return res.send({ message: "book _id is Missing" });
     }
     try {
-      let book = await BookModel.findOne({ _id: id });
+      let book = await BookModel.findOne({ _id: id, createdBy: userId });
       if (!book) {
-        return res.send({ message: "Book Not Found" });
+        return res.send({
+          message:
+            "Book Not Found or You are not allow to delete other users book",
+        });
       }
       await BookModel.deleteOne({ _id: id });
       console.log("dele");
